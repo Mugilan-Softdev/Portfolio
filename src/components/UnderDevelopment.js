@@ -13,10 +13,10 @@ const underDevelopment = () => {
               onClick={handleClose}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
             >
-              <FiX />
+              {/* <FiX /> */}
             </button>
             <div className="flex items-center space-x-2">
-              <FiAlertCircle className="text-red-500 text-2xl" />
+              {/* <FiAlertCircle className="text-red-500 text-2xl" /> */}
               <h2 className="text-xl font-bold"> Under Development</h2>
             </div>
             <p className="mt-4 flex items-center space-x-2">
