@@ -21,7 +21,7 @@ const underDevelopment = () => {
             </div>
             <p className="mt-4 flex items-center space-x-2">
               <span>
-                i am currently working that why the portfolio its not complet
+                i am currently working that why the portfolio its not complete
               </span>
             </p>
           </div>

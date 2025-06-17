@@ -1,40 +1,32 @@
 "use client";
-import UnderDevelopment from "@/components/UnderDevelopment";
-import Image from "next/image";
-import React, { useState } from "react";
-import { IoMenu } from "react-icons/io5";
 
-const Page = () => {
-  const [showPopup, setShowPopup] = useState(true);
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import About from "@/components/About";
+import Skills from "@/components/Skills";
+import ViewCounter from "@/components/ViewCounter";
+import dynamic from "next/dynamic";
 
-  const handleClose = () => {
-    setShowPopup(false);
-  };
+// Dynamically import components with SSR disabled to avoid hydration issues
+const Projects = dynamic(() => import("@/components/Projects"), {
+  ssr: false,
+});
 
+const Games = dynamic(() => import("@/components/Games"), {
+  ssr: false,
+});
+
+export default function Home() {
   return (
-    // container
-    <div className="relative w-full h-auto bg-gradient-to-b from-black to-red-950 flex items-center justify-center">
-      {/* top session */}
-      <div className="w-full h-screen">
-        {/* navbar */}
-        <nav className=" w-full h-12 flex items-center justify-between ">
-          <div className="flex">
-            <Image
-              src="/your-image-path.jpg"
-              alt="Description of Image"
-              width={10}
-              height={10}
-            />
-            <h1 className="text-white text-2xl font-bold">Mukilan Rajaram</h1>
-          </div>
-          <IoMenu className="text-white" />
-        </nav>
-        <h1 className="text-white text-8xl font-extrabold">Mukilan Rajara</h1>
-      </div>
+    <main className="min-h-screen">
+      <Navbar />
+      <Hero />
+      <About />
+      <Skills />
+      <Games />
+      <Projects />
 
-      {/* {showPopup && <UnderDevelopment />} */}
-    </div>
+      <ViewCounter />
+    </main>
   );
-};
-
-export default Page;
+}
