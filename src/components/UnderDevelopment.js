@@ -1,32 +1,53 @@
-import React from 'react'
+"use client";
 
-const underDevelopment = () => {
-   const handleClose = () => {
-    setShowPopup(false);
-  };
+import { useState } from "react";
+
+export default function UnderDevelopment() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-md">
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="relative bg-white text-black p-6 rounded-md shadow-lg max-w-sm w-full">
-            <button
-              onClick={handleClose}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
-            >
-              {/* <FiX /> */}
-            </button>
-            <div className="flex items-center space-x-2">
-              {/* <FiAlertCircle className="text-red-500 text-2xl" /> */}
-              <h2 className="text-xl font-bold"> Under Development</h2>
-            </div>
-            <p className="mt-4 flex items-center space-x-2">
-              <span>
-                i am currently working that why the portfolio its not complete
-              </span>
-            </p>
-          </div>
+    <div className="fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-yellow-500 to-red-500 text-white py-2 px-4 shadow-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <svg
+            className="w-5 h-5 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p className="font-medium text-sm">
+            🚧 Site under development - Some features may not be available
+          </p>
         </div>
-  )
+        <button
+          onClick={() => setIsVisible(false)}
+          className="text-white hover:text-gray-200 focus:outline-none"
+          aria-label="Close development notice"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
 }
-
-export default underDevelopment;
