@@ -91,4 +91,57 @@ export async function deleteSkill({ params }) {
   }
 }
 
+// Seed skills
+export async function seedSkills(req, res) {
+  try {
+    await dbConnect();
 
+    // Sample skills data
+    const skillsData = [
+      {
+        name: "JavaScript",
+        category: "Frontend",
+        proficiency: 90,
+        icon: "javascript",
+      },
+      {
+        name: "React",
+        category: "Frontend",
+        proficiency: 85,
+        icon: "react",
+      },
+      {
+        name: "Node.js",
+        category: "Backend",
+        proficiency: 80,
+        icon: "nodejs",
+      },
+      {
+        name: "MongoDB",
+        category: "Database",
+        proficiency: 75,
+        icon: "mongodb",
+      },
+    ];
+
+    // Delete existing skills
+    await skillModel.deleteMany({});
+
+    // Insert new skills
+    const skills = await skillModel.insertMany(skillsData);
+
+    if (res) {
+      return res.status(200).json({ success: true, data: skills });
+    }
+    return NextResponse.json({ success: true, data: skills });
+  } catch (error) {
+    console.error("Error in seedSkills:", error);
+    if (res) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}
