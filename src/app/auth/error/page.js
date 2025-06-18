@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -34,7 +32,7 @@ const errors = {
 
 export default function ErrorPage() {
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
+  const error = searchParams?.get("error");
   const errorDetails = errors[error] || errors.Default;
 
   return (
