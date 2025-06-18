@@ -78,7 +78,6 @@ export default function SkillsManagement() {
       setFormData({
         name: "",
         category: "",
-        proficiency: 0,
         icon: "code",
         color: "text-blue-500",
       });
@@ -94,7 +93,6 @@ export default function SkillsManagement() {
     setFormData({
       name: skill.name,
       category: skill.category,
-      proficiency: skill.proficiency,
       icon: skill.icon,
       color: skill.color,
     });
@@ -202,7 +200,6 @@ export default function SkillsManagement() {
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-gray-300 mb-2">Icon</label>
               <select
@@ -238,13 +235,8 @@ export default function SkillsManagement() {
               </select>
             </div>
           </div>
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {editingSkill ? "Update Skill" : "Add Skill"}
-            </button>
+
+          <div className="flex justify-end gap-4">
             {editingSkill && (
               <button
                 type="button"
@@ -253,16 +245,21 @@ export default function SkillsManagement() {
                   setFormData({
                     name: "",
                     category: "",
-                    proficiency: 0,
                     icon: "code",
                     color: "text-blue-500",
                   });
                 }}
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
               >
-                Cancel Edit
+                Cancel
               </button>
             )}
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              {editingSkill ? "Update Skill" : "Add Skill"}
+            </button>
           </div>
         </form>
       </div>
@@ -270,72 +267,40 @@ export default function SkillsManagement() {
       {/* Skills List */}
       <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
         <h2 className="text-xl font-semibold text-white mb-4">Skills List</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {skills.map((skill) => (
             <div
               key={skill._id}
-              className="bg-gray-700 rounded-lg p-4 flex items-start justify-between"
+              className="flex items-center justify-between bg-gray-700 p-4 rounded"
             >
-              <div>
-                <h3 className={`text-lg font-medium ${skill.color}`}>
-                  {skill.name}
-                </h3>
-                <p className="text-gray-400 text-sm">{skill.category}</p>
-                <div className="mt-2">
-                  <div className="h-2 w-full bg-gray-600 rounded-full">
-                    <div
-                      className={`h-full rounded-full ${skill.color.replace(
-                        "text",
-                        "bg"
-                      )}`}
-                      style={{ width: `${skill.proficiency}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-gray-400">
-                    {skill.proficiency}%
-                  </span>
+              <div className="flex items-center gap-4">
+                <div className={`text-2xl ${skill.color}`}>
+                  <i className={`fas fa-${skill.icon}`}></i>
+                </div>
+                <div>
+                  <h3 className="text-white font-medium">{skill.name}</h3>
+                  <p className="text-gray-400 text-sm">{skill.category}</p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEdit(skill)}
-                  className="p-2 text-blue-400 hover:text-blue-300"
+                  className="p-2 text-blue-500 hover:text-blue-400"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
+                  <i className="fas fa-edit"></i>
                 </button>
                 <button
                   onClick={() => handleDelete(skill._id)}
-                  className="p-2 text-red-400 hover:text-red-300"
+                  className="p-2 text-red-500 hover:text-red-400"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <i className="fas fa-trash"></i>
                 </button>
               </div>
             </div>
           ))}
+          {skills.length === 0 && (
+            <p className="text-gray-400 text-center py-4">No skills found.</p>
+          )}
         </div>
       </div>
     </div>

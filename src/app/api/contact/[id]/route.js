@@ -1,12 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
-import {
-  getMessages,
-  createMessage,
-} from "@/server/controllers/contactController";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { deleteMessage } from "@/server/controllers/contactController";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function DELETE(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -17,15 +14,11 @@ export async function GET() {
       );
     }
 
-    return getMessages();
+    return deleteMessage(request, { params });
   } catch (error) {
     return NextResponse.json(
-      { success: false, error: "Failed to fetch messages" },
+      { success: false, error: "Failed to delete message" },
       { status: 500 }
     );
   }
-}
-
-export async function POST(request) {
-  return createMessage(request);
 }

@@ -31,6 +31,8 @@ export default function Home() {
         <Projects />
         <ViewCounter />
       </main>
+
+      
     </>
   );
 }

@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
-// Dynamically import ChessGame with no SSR to avoid hydration issues
+// Dynamically import game components with no SSR to avoid hydration issues
 const ChessGame = dynamic(() => import("./ChessGame"), { ssr: false });
+const SudokuGame = dynamic(() => import("./SudokuGame"), { ssr: false });
+const MemoryGame = dynamic(() => import("./MemoryGame"), { ssr: false });
+const WordSearchGame = dynamic(() => import("./WordSearchGame"), { ssr: false });
 
 const GameIcons = {
   Chess: (
@@ -78,81 +82,170 @@ const GAMES = [
   {
     id: 1,
     title: "Chess",
+    description: "Challenge yourself with a classic game of chess",
+    image: "/chess.jpg",
     type: "chess",
   },
   {
     id: 2,
     title: "Sudoku",
-    playLink: "https://sudoku.com",
-    type: "external",
+    description: "Test your logical thinking with number puzzles",
+    image: "/sudoku.jpg",
+    type: "sudoku",
   },
   {
     id: 3,
     title: "Memory Cards",
-    playLink: "https://www.memozor.com/memory-games",
-    type: "external",
+    description: "Improve your memory with this matching game",
+    image: "/memory.jpg",
+    type: "memory",
   },
   {
     id: 4,
     title: "Word Search",
-    playLink: "https://thewordsearch.com",
-    type: "external",
+    description: "Find hidden words in this classic puzzle game",
+    image: "/word search.webp",
+    type: "wordsearch",
   },
 ];
 
 const Games = () => {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [hoveredGame, setHoveredGame] = useState(null);
 
   const handleGameClick = (game) => {
-    if (game.type === "chess") {
+    if (["chess", "sudoku", "memory", "wordsearch"].includes(game.type)) {
       setSelectedGame(game);
     } else if (game.type === "external") {
       window.open(game.playLink, "_blank");
     }
   };
 
+  const renderSelectedGame = () => {
+    switch (selectedGame?.type) {
+      case "chess":
+        return <ChessGame />;
+      case "sudoku":
+        return <SudokuGame />;
+      case "memory":
+        return <MemoryGame />;
+      case "wordsearch":
+        return <WordSearchGame />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <section id="games" className="py-20 bg-gray-900">
+    <section id="games" className="py-20 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Games
-          </h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-4">
+              Game Zone
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Take a break and enjoy these brain-training games. Challenge
+              yourself and have fun!
+            </p>
+          </motion.div>
         </div>
 
-        {selectedGame?.type === "chess" ? (
-          <div className="mb-8">
-            <button
+        {selectedGame ? (
+          <div className="relative">
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               onClick={() => setSelectedGame(null)}
-              className="mb-8 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              className="mb-8 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 group"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
               Back to Games
-            </button>
-            <ChessGame />
+            </motion.button>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {renderSelectedGame()}
+            </motion.div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {GAMES.map((game, index) => (
               <motion.div
                 key={game.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                onHoverStart={() => setHoveredGame(game.id)}
+                onHoverEnd={() => setHoveredGame(null)}
                 onClick={() => handleGameClick(game)}
-                className="group relative bg-gradient-to-br from-[#1A1F2B] to-[#2A2F3B] rounded-2xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 aspect-[4/5] shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 cursor-pointer"
+                className="group relative rounded-xl overflow-hidden cursor-pointer"
               >
-                {/* Decorative elements */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+                {/* Background Image */}
+                <div className="relative h-[300px] w-full">
+                  <Image
+                    src={game.image}
+                    alt={game.title}
+                    fill
+                    className="object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                </div>
 
-                <div className="block h-full relative z-10">
-                  <div className="h-[70%] w-full flex items-center justify-center p-6">
-                    {GameIcons[game.title]}
-                  </div>
-                  <div className="h-[30%] flex items-center justify-center bg-gradient-to-r from-[#1A1F2B]/80 to-[#2A2F3B]/80 backdrop-blur-sm border-t border-white/10">
-                    <h3 className="text-lg font-medium text-white text-center px-4 group-hover:text-blue-400 transition-colors duration-300">
-                      {game.title}
-                    </h3>
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col justify-end p-6">
+                  <motion.div
+                    animate={{
+                      y: hoveredGame === game.id ? 0 : 20,
+                      opacity: hoveredGame === game.id ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="text-gray-300 mb-2"
+                  >
+                    {game.description}
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                    {game.title}
+                  </h3>
+                  <div className="flex items-center gap-2 text-blue-400">
+                    <span className="text-sm">
+                      {game.type === "external" ? "Play on Website" : "Play Now"}
+                    </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 transform group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 </div>
               </motion.div>
