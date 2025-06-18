@@ -5,41 +5,80 @@ import { toast } from "react-hot-toast";
 
 export default function SkillsManagement() {
   const [skills, setSkills] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingSkill, setEditingSkill] = useState(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategory, setNewCategory] = useState({ name: "", description: "" });
 
   // Form state
   const [formData, setFormData] = useState({
     name: "",
     category: "",
-    icon: "code",
-    color: "text-blue-500",
+    icon: "",
   });
-
-  // Available options
-  const iconOptions = ["code", "brush", "server", "database", "cloud"];
-  const colorOptions = [
-    "text-blue-500",
-    "text-green-500",
-    "text-red-500",
-    "text-yellow-500",
-    "text-purple-500",
-    "text-pink-500",
-    "text-indigo-500",
-  ];
-  const categoryOptions = [
-    "Frontend",
-    "Backend",
-    "Database",
-    "DevOps",
-    "Design",
-    "Tools",
-  ];
 
   useEffect(() => {
     fetchSkills();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      const data = await res.json();
+      setCategories(data.data || []);
+    } catch (err) {
+      toast.error("Failed to load categories");
+      console.error(err);
+    }
+  };
+
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newCategory),
+      });
+
+      if (!res.ok) throw new Error("Failed to add category");
+
+      toast.success("Category added successfully!");
+      setNewCategory({ name: "", description: "" });
+      setShowCategoryModal(false);
+      fetchCategories();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    if (
+      !window.confirm(
+        "Are you sure? This will affect all skills using this category."
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch(`/api/categories?id=${categoryId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete category");
+
+      toast.success("Category deleted successfully!");
+      fetchCategories();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   const fetchSkills = async () => {
     try {
@@ -78,8 +117,7 @@ export default function SkillsManagement() {
       setFormData({
         name: "",
         category: "",
-        icon: "code",
-        color: "text-blue-500",
+        icon: "",
       });
       setEditingSkill(null);
       fetchSkills();
@@ -94,7 +132,6 @@ export default function SkillsManagement() {
       name: skill.name,
       category: skill.category,
       icon: skill.icon,
-      color: skill.color,
     });
   };
 
@@ -141,26 +178,159 @@ export default function SkillsManagement() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white">Skills Management</h1>
-        {skills.length === 0 && (
-          <button
-            onClick={async () => {
-              try {
-                const res = await fetch("/api/skills/seed", {
-                  method: "POST",
-                });
-                if (!res.ok) throw new Error("Failed to seed skills");
+        <div className="flex gap-4">
+          {skills.length === 0 && (
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/skills/seed", {
+                    method: "POST",
+                  });
+                  if (!res.ok) throw new Error("Failed to seed skills");
 
-                toast.success("Initial skills added successfully!");
-                fetchSkills();
-              } catch (err) {
-                toast.error(err.message);
-              }
-            }}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  toast.success("Initial skills added successfully!");
+                  fetchSkills();
+                } catch (err) {
+                  toast.error(err.message);
+                }
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Add Initial Skills
+            </button>
+          )}
+          <button
+            onClick={() => setShowCategoryModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Add Initial Skills
+            Manage Categories
           </button>
-        )}
+        </div>
+      </div>
+
+      {/* Category Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Manage Categories
+            </h2>
+
+            {/* Add Category Form */}
+            <form onSubmit={handleAddCategory} className="mb-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Category Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newCategory.name}
+                    onChange={(e) =>
+                      setNewCategory({ ...newCategory, name: e.target.value })
+                    }
+                    className="w-full bg-gray-700 text-white rounded p-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Description (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newCategory.description}
+                    onChange={(e) =>
+                      setNewCategory({
+                        ...newCategory,
+                        description: e.target.value,
+                      })
+                    }
+                    className="w-full bg-gray-700 text-white rounded p-2"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Add Category
+                </button>
+              </div>
+            </form>
+
+            {/* Categories List */}
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {categories.map((category) => (
+                <div
+                  key={category._id}
+                  className="flex items-center justify-between bg-gray-700 p-3 rounded"
+                >
+                  <div>
+                    <p className="text-white">{category.name}</p>
+                    {category.description && (
+                      <p className="text-gray-400 text-sm">
+                        {category.description}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteCategory(category._id)}
+                    className="text-red-500 hover:text-red-400"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowCategoryModal(false)}
+              className="mt-6 w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Skills List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {skills.map((skill) => (
+          <div
+            key={skill._id}
+            className="bg-gray-800 rounded-xl p-6 border border-gray-700"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-gray-700 rounded-lg p-2">
+                <img
+                  src={skill.icon}
+                  alt={skill.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  {skill.name}
+                </h3>
+                <p className="text-gray-400">{skill.category}</p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => handleEdit(skill)}
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(skill._id)}
+                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Add/Edit Form */}
@@ -193,46 +363,36 @@ export default function SkillsManagement() {
                 required
               >
                 <option value="">Select Category</option>
-                {categoryOptions.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Icon</label>
-              <select
-                value={formData.icon}
-                onChange={(e) =>
-                  setFormData({ ...formData, icon: e.target.value })
-                }
-                className="w-full bg-gray-700 text-white rounded p-2"
-                required
-              >
-                {iconOptions.map((icon) => (
-                  <option key={icon} value={icon}>
-                    {icon}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Color</label>
-              <select
-                value={formData.color}
-                onChange={(e) =>
-                  setFormData({ ...formData, color: e.target.value })
-                }
-                className="w-full bg-gray-700 text-white rounded p-2"
-                required
-              >
-                {colorOptions.map((color) => (
-                  <option key={color} value={color}>
-                    {color.replace("text-", "").replace("-500", "")}
-                  </option>
-                ))}
-              </select>
+            <div className="md:col-span-2">
+              <label className="block text-gray-300 mb-2">Icon URL</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="url"
+                  value={formData.icon}
+                  onChange={(e) =>
+                    setFormData({ ...formData, icon: e.target.value })
+                  }
+                  className="w-full bg-gray-700 text-white rounded p-2"
+                  placeholder="https://example.com/icon.svg"
+                  required
+                />
+                <div className="w-12 h-12 bg-gray-700 rounded-lg p-2">
+                  {formData.icon && (
+                    <img
+                      src={formData.icon}
+                      alt="Icon preview"
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -245,8 +405,7 @@ export default function SkillsManagement() {
                   setFormData({
                     name: "",
                     category: "",
-                    icon: "code",
-                    color: "text-blue-500",
+                    icon: "",
                   });
                 }}
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
@@ -258,50 +417,10 @@ export default function SkillsManagement() {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              {editingSkill ? "Update Skill" : "Add Skill"}
+              {editingSkill ? "Update" : "Add"} Skill
             </button>
           </div>
         </form>
-      </div>
-
-      {/* Skills List */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-4">Skills List</h2>
-        <div className="grid grid-cols-1 gap-4">
-          {skills.map((skill) => (
-            <div
-              key={skill._id}
-              className="flex items-center justify-between bg-gray-700 p-4 rounded"
-            >
-              <div className="flex items-center gap-4">
-                <div className={`text-2xl ${skill.color}`}>
-                  <i className={`fas fa-${skill.icon}`}></i>
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">{skill.name}</h3>
-                  <p className="text-gray-400 text-sm">{skill.category}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(skill)}
-                  className="p-2 text-blue-500 hover:text-blue-400"
-                >
-                  <i className="fas fa-edit"></i>
-                </button>
-                <button
-                  onClick={() => handleDelete(skill._id)}
-                  className="p-2 text-red-500 hover:text-red-400"
-                >
-                  <i className="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          ))}
-          {skills.length === 0 && (
-            <p className="text-gray-400 text-center py-4">No skills found.</p>
-          )}
-        </div>
       </div>
     </div>
   );
