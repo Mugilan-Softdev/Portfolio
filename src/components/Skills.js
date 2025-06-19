@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const Skills = () => {
+export default function Skills() {
   const [skills, setSkills] = useState([]);
-  const [categories, setCategories] = useState(["All"]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -18,27 +17,14 @@ const Skills = () => {
         const response = await fetch("/api/skills");
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error("Failed to fetch skills");
         }
 
-        const data = await response.json();
-
-        if (!data || !data.data || !Array.isArray(data.data)) {
-          throw new Error("Invalid data format received from server");
-        }
-
-        setSkills(data.data);
-
-        // Extract unique categories
-        const uniqueCategories = [
-          "All",
-          ...new Set(data.data.map((skill) => skill.category)),
-        ];
-        setCategories(uniqueCategories);
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-        setError(error.message);
-        setSkills([]);
+        const result = await response.json();
+        setSkills(result.data);
+      } catch (err) {
+        console.error("Error fetching skills:", err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -47,101 +33,82 @@ const Skills = () => {
     fetchSkills();
   }, []);
 
+  const categories = ["All", ...new Set(skills.map((skill) => skill.category))];
+
   const filteredSkills =
-    skills && selectedCategory === "All"
+    selectedCategory === "All"
       ? skills
       : skills.filter((skill) => skill.category === selectedCategory);
 
+  if (loading) {
+    return null; // Using the main loader
+  }
+
+  if (error) {
+    return (
+      <section id="skills" className="section-padding relative">
+        <div className="text-center text-red-500">
+          <p>Error loading skills: {error}</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section id="skills" className="section-padding relative bg-gray-900">
-      <div className="max-w-7xl mx-auto relative">
-        <h2 className="heading text-center">Skills & Expertise</h2>
-        <p className="subheading text-center">
+    <section id="skills" className="section-padding relative">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-4">
+          Skills & Expertise
+        </h2>
+        <p className="text-gray-400 text-center text-lg mb-12">
           My technical toolkit for creating amazing web experiences
         </p>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex justify-center gap-4 mb-12 flex-wrap">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-              }`}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all
+                ${
+                  selectedCategory === category
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50"
+                }`}
             >
               {category}
             </button>
           ))}
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center text-red-500 py-8">
-            <p>Error loading skills: {error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredSkills.map((skill, index) => (
+            <motion.div
+              key={skill._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all group"
             >
-              Try Again
-            </button>
-          </div>
-        ) : filteredSkills && filteredSkills.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSkills.map((skill, index) => (
-              <motion.div
-                key={skill._id || index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700"
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`p-3 rounded-lg ${
-                      skill.color
-                        ?.replace("text-", "bg-")
-                        ?.replace("500", "500/20") || "bg-gray-500/20"
-                    }`}
-                  >
-                    <img
-                      src={skill.icon}
-                      alt={skill.name}
-                      className="w-6 h-6 object-contain"
-                      onError={(e) => {
-                        e.target.src = "/file.svg"; // Fallback icon
-                      }}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3
-                      className={`text-xl font-semibold ${
-                        skill.color || "text-gray-200"
-                      }`}
-                    >
-                      {skill.name}
-                    </h3>
-                    <p className="text-gray-400 text-sm mt-1">
-                      {skill.category}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gray-700/30 p-2">
+                  <img
+                    src={skill.icon}
+                    alt={skill.name}
+                    className="w-8 h-8 object-contain group-hover:scale-110 transition-transform"
+                  />
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-gray-400 py-8">
-            No skills found for the selected category.
-          </div>
-        )}
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-1">
+                    {skill.name}
+                  </h3>
+                  <p className="text-sm text-gray-400">{skill.category}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
-};
-
-export default Skills;
+}

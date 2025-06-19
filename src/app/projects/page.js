@@ -53,7 +53,7 @@ export default function ProjectsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center pt-16">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -61,7 +61,7 @@ export default function ProjectsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center pt-16">
         <div className="text-red-500 text-center">
           <h2 className="text-2xl font-bold mb-4">Error</h2>
           <p>{error}</p>
@@ -71,7 +71,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">My Projects</h1>
@@ -82,12 +82,12 @@ export default function ProjectsPage() {
 
         {/* Filters */}
         <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 w-full sm:w-auto">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap
                   ${
                     selectedCategory === category
                       ? "bg-blue-600 text-white"
@@ -115,7 +115,7 @@ export default function ProjectsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col"
             >
               <div className="relative h-48">
                 <img
@@ -129,11 +129,13 @@ export default function ProjectsPage() {
                   </div>
                 )}
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold text-white mb-2 line-clamp-1">
                   {project.title}
                 </h3>
-                <p className="text-gray-400 mb-4">{project.description}</p>
+                <p className="text-gray-400 mb-4 line-clamp-2">
+                  {project.description}
+                </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech) => (
                     <span
@@ -144,7 +146,7 @@ export default function ProjectsPage() {
                     </span>
                   ))}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between mt-auto pt-4">
                   <a
                     href={project.liveUrl}
                     target="_blank"

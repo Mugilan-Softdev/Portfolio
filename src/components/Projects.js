@@ -38,13 +38,7 @@ export default function Projects() {
   }, []);
 
   if (loading) {
-    return (
-      <section id="projects" className="section-padding relative">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      </section>
-    );
+    return null; // Return nothing while loading since we have the main loader
   }
 
   if (error) {
@@ -74,7 +68,7 @@ export default function Projects() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500 transition-colors"
             >
-              <div className="relative h-48">
+              <div className="relative aspect-video">
                 <img
                   src={project.image}
                   alt={project.title}
@@ -102,7 +96,7 @@ export default function Projects() {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2 line-clamp-1">
                   {project.title}
                 </h3>
                 <p className="text-gray-400 mb-4 line-clamp-2">
@@ -130,7 +124,7 @@ export default function Projects() {
 
         <div className="text-center mt-12">
           <Link
-            href="/projects"
+            href="#projects"
             className="inline-block px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
           >
             View All Projects

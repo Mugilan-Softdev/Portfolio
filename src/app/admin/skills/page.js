@@ -99,7 +99,7 @@ export default function SkillsManagement() {
     e.preventDefault();
     try {
       const url = editingSkill
-        ? `/api/skills?id=${editingSkill._id}`
+        ? `/api/skills/${editingSkill._id}`
         : "/api/skills";
       const method = editingSkill ? "PUT" : "POST";
 
@@ -139,7 +139,7 @@ export default function SkillsManagement() {
     if (!window.confirm("Are you sure you want to delete this skill?")) return;
 
     try {
-      const res = await fetch(`/api/skills?id=${skillId}`, {
+      const res = await fetch(`/api/skills/${skillId}`, {
         method: "DELETE",
       });
 
@@ -371,25 +371,68 @@ export default function SkillsManagement() {
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-gray-300 mb-2">Icon URL</label>
+              <label className="block text-gray-300 mb-2">
+                Icon URL
+                <span className="text-sm text-gray-400 ml-2">
+                  (Direct image URL ending with .png, .jpg, .svg, etc.)
+                </span>
+              </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="url"
-                  value={formData.icon}
-                  onChange={(e) =>
-                    setFormData({ ...formData, icon: e.target.value })
-                  }
-                  className="w-full bg-gray-700 text-white rounded p-2"
-                  placeholder="https://example.com/icon.svg"
-                  required
-                />
-                <div className="w-12 h-12 bg-gray-700 rounded-lg p-2">
+                <div className="space-y-2">
+                  <input
+                    type="url"
+                    value={formData.icon}
+                    onChange={(e) =>
+                      setFormData({ ...formData, icon: e.target.value })
+                    }
+                    className="w-full bg-gray-700 text-white rounded p-2"
+                    placeholder="https://example.com/icon.svg"
+                    required
+                  />
+                  <div className="text-sm text-gray-400">
+                    Tips:
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>
+                        Use direct image URLs (right-click image → Copy image
+                        address)
+                      </li>
+                      <li>
+                        URL should end with an image extension (.png, .jpg,
+                        .svg, etc.)
+                      </li>
+                      <li>Avoid Google redirect or search result URLs</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                    {formData.icon ? (
+                      <img
+                        src={formData.icon}
+                        alt="Icon preview"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/file.svg";
+                          toast.error(
+                            "Failed to load image. Please check the URL."
+                          );
+                        }}
+                      />
+                    ) : (
+                      <div className="text-gray-400 text-sm text-center">
+                        Preview
+                      </div>
+                    )}
+                  </div>
                   {formData.icon && (
-                    <img
-                      src={formData.icon}
-                      alt="Icon preview"
-                      className="w-full h-full object-contain"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, icon: "" })}
+                      className="text-sm text-red-400 hover:text-red-300 mt-2"
+                    >
+                      Clear Image
+                    </button>
                   )}
                 </div>
               </div>

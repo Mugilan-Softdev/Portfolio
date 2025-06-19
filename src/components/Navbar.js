@@ -22,6 +22,25 @@ const Navbar = () => {
     }
   };
 
+  const handleSectionClick = (sectionId) => {
+    if (pathname !== "/") {
+      router.push("/");
+      // Add a small delay to ensure the navigation completes before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setIsMenuOpen(false);
+  };
+
   const isActive = (path) => {
     return pathname === path;
   };
@@ -44,34 +63,30 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              href="/projects"
-              className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                isActive("/projects")
-                  ? "border-blue-500 text-white"
-                  : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
-              }`}
+            <button
+              onClick={() => handleSectionClick("projects")}
+              className="text-gray-300 hover:text-white transition-colors"
             >
               Projects
-            </Link>
-            <Link
-              href="#about"
+            </button>
+            <button
+              onClick={() => handleSectionClick("about")}
               className="text-gray-300 hover:text-white transition-colors"
             >
               About
-            </Link>
-            <Link
-              href="#skills"
+            </button>
+            <button
+              onClick={() => handleSectionClick("skills")}
               className="text-gray-300 hover:text-white transition-colors"
             >
               Skills
-            </Link>
-            <Link
-              href="#contact"
+            </button>
+            <button
+              onClick={() => handleSectionClick("contact")}
               className="text-gray-300 hover:text-white transition-colors"
             >
               Contact
-            </Link>
+            </button>
 
             {/* Profile Section (only shown when logged in) */}
             {session && (
@@ -159,38 +174,30 @@ const Navbar = () => {
               >
                 Home
               </Link>
-              <Link
-                href="/projects"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive("/projects")
-                    ? "border-blue-500 text-white"
-                    : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                onClick={() => handleSectionClick("projects")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Projects
-              </Link>
-              <Link
-                href="#about"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("about")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 About
-              </Link>
-              <Link
-                href="#skills"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("skills")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Skills
-              </Link>
-              <Link
-                href="#contact"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("contact")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Contact
-              </Link>
+              </button>
 
               {session && (
                 <div className="border-t border-gray-700 pt-4">

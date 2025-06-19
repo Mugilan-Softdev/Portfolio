@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import userModel from "@/server/models/userModel";
 import dbConnect from "@/server/config/dbConnect";
+import User from "@/server/models/userModel";
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error("Missing Google OAuth credentials");
@@ -11,69 +11,56 @@ if (!process.env.NEXTAUTH_SECRET) {
   throw new Error("Missing NEXTAUTH_SECRET");
 }
 
-const authOptions = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account }) {
-      if (account.provider === "google") {
+      if (account?.provider === "google") {
         try {
           await dbConnect();
 
           // Check if user exists
-          const existingUser = await userModel.findOne({ email: user.email });
+          let dbUser = await User.findOne({ email: user.email });
 
-          if (!existingUser) {
-            // Check total users before creating new user
-            const totalUsers = await userModel.countDocuments();
-
-            // Create new user
-            const newUser = await userModel.create({
+          if (!dbUser) {
+            // Create new user if doesn't exist
+            dbUser = await User.create({
               name: user.name,
               email: user.email,
               image: user.image,
-              googleId: user.id,
-              role: totalUsers === 0 ? "admin" : "user",
+              role: "user", // Default role
             });
-
-            if (!newUser) {
-              console.error("Failed to create new user");
-              return "/auth/error?error=Database";
-            }
           }
 
           return true;
         } catch (error) {
-          console.error("Error in signIn callback:", error);
-          // Check if it's a connection error
-          if (error.message.includes("connect")) {
-            return "/auth/error?error=DatabaseConnection";
-          }
-          return "/auth/error?error=Database";
+          console.error("Sign in error:", error);
+          return false;
         }
       }
       return true;
     },
-    async session({ session, token }) {
+    async session({ session }) {
       try {
         await dbConnect();
-        // Add user role to session
-        const user = await userModel.findOne({ email: session.user.email });
-        if (!user) {
-          console.error("User not found in database:", session.user.email);
-          return null;
+
+        // Get user from database
+        const user = await User.findOne({ email: session.user.email });
+
+        // Add role to session
+        if (user) {
+          session.user.role = user.role;
         }
-        session.user.role = user.role || "user";
-        session.user.id = user._id.toString();
+
         return session;
       } catch (error) {
-        console.error("Error in session callback:", error);
-        return null;
+        console.error("Session callback error:", error);
+        return session;
       }
     },
     async jwt({ token, user, account }) {
@@ -88,10 +75,8 @@ const authOptions = {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
-  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
-export { authOptions };
