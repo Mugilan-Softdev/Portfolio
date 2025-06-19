@@ -6,10 +6,20 @@
   :root {
     --primary: #2563eb;
     --secondary: #3b82f6;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
   }
 
   body {
     @apply bg-gray-900 text-gray-100;
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgb(var(--background-end-rgb))
+      )
+      rgb(var(--background-start-rgb));
   }
 }
 
@@ -169,4 +179,25 @@
     height: 40px;
     transform: translate(48px, 0);
   }
+}
+
+/* Memory Game Card Flipping Styles */
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Add smooth transitions for all transforms */
+.transition-transform {
+  transition: transform 0.6s;
+}
+
+/* Ensure proper 3D rendering */
+[style*="transform-style: preserve-3d"] {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
