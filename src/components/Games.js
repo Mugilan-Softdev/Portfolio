@@ -9,7 +9,9 @@ import Image from "next/image";
 const ChessGame = dynamic(() => import("./ChessGame"), { ssr: false });
 const SudokuGame = dynamic(() => import("./SudokuGame"), { ssr: false });
 const MemoryGame = dynamic(() => import("./MemoryGame"), { ssr: false });
-const WordSearchGame = dynamic(() => import("./WordSearchGame"), { ssr: false });
+const WordSearchGame = dynamic(() => import("./WordSearchGame"), {
+  ssr: false,
+});
 
 const GameIcons = {
   Chess: (
@@ -137,7 +139,7 @@ const Games = () => {
   };
 
   return (
-    <section id="games" className="py-20 ">
+    <section id="games" className="py-20 bg-[#0B1120]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <motion.div
@@ -230,7 +232,9 @@ const Games = () => {
                   </h3>
                   <div className="flex items-center gap-2 text-blue-400">
                     <span className="text-sm">
-                      {game.type === "external" ? "Play on Website" : "Play Now"}
+                      {game.type === "external"
+                        ? "Play on Website"
+                        : "Play Now"}
                     </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -58,7 +58,7 @@ const Footer = () => {
   return (
     <footer
       id="contact"
-      className="relative bg-[#0B1120] pt-20 pb-6 overflow-hidden"
+      className="relative bg-[#0e162a] pt-20 pb-6 overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>

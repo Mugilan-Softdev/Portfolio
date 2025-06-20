@@ -2,7 +2,10 @@ import Image from "next/image";
 
 const Hero = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center section-padding pt-32">
+    <section
+      id="home"
+      className="min-h-screen flex items-center justify-center bg-[#0B1120] py-20"
+    >
       <div className="max-w-7xl mx-auto text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6">
           Hi, I'm <span className="gradient-text">Mukilan Rajaram</span>

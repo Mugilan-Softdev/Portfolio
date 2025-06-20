@@ -33,9 +33,40 @@ export async function createSkill(request) {
   try {
     await dbConnect();
     const data = await request.json();
+    console.log("Creating skill with data:", data);
+
+    // Validate required fields
+    if (!data.name || !data.category || !data.icon) {
+      console.error("Missing required fields");
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Missing required fields: name, category, and icon are required",
+        },
+        { status: 400 }
+      );
+    }
+
     const skill = await skillModel.create(data);
+    console.log("Skill created successfully:", skill);
     return NextResponse.json({ success: true, data: skill });
   } catch (error) {
+    console.error("Error creating skill:", error);
+    // Check for validation errors
+    if (error.name === "ValidationError") {
+      return NextResponse.json(
+        { success: false, error: "Validation error: " + error.message },
+        { status: 400 }
+      );
+    }
+    // Check for duplicate key errors
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { success: false, error: "A skill with this name already exists" },
+        { status: 409 }
+      );
+    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
@@ -84,61 +115,6 @@ export async function deleteSkill({ params }) {
 
     return NextResponse.json({ success: true, data: {} });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// Seed skills
-export async function seedSkills(req, res) {
-  try {
-    await dbConnect();
-
-    // Sample skills data
-    const skillsData = [
-      {
-        name: "JavaScript",
-        category: "Frontend",
-        proficiency: 90,
-        icon: "javascript",
-      },
-      {
-        name: "React",
-        category: "Frontend",
-        proficiency: 85,
-        icon: "react",
-      },
-      {
-        name: "Node.js",
-        category: "Backend",
-        proficiency: 80,
-        icon: "nodejs",
-      },
-      {
-        name: "MongoDB",
-        category: "Database",
-        proficiency: 75,
-        icon: "mongodb",
-      },
-    ];
-
-    // Delete existing skills
-    await skillModel.deleteMany({});
-
-    // Insert new skills
-    const skills = await skillModel.insertMany(skillsData);
-
-    if (res) {
-      return res.status(200).json({ success: true, data: skills });
-    }
-    return NextResponse.json({ success: true, data: skills });
-  } catch (error) {
-    console.error("Error in seedSkills:", error);
-    if (res) {
-      return res.status(500).json({ success: false, error: error.message });
-    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
