@@ -1,10 +1,30 @@
-import Image from "next/image";
+"use client";
+
+import { useRouter, usePathname } from "next/navigation";
 
 const Hero = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSectionClick = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 80;
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center bg-[#0B1120] py-20"
+      className="min-h-screen flex items-center justify-center bg-[#0B1120] py-20 z-50"
     >
       <div className="max-w-7xl mx-auto text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6">
@@ -18,24 +38,27 @@ const Hero = () => {
             href="https://drive.google.com/file/d/1Ux2jKIQjL5UmlErGQgISUuVzqhL6tOpX/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary"
+            style={{ cursor: "pointer" }}
+            className="btn-primary hover:cursor-pointer z-50"
           >
             Resume
           </a>
-          <a
-            href="#projects"
-            className="btn-primary bg-gray-700 hover:bg-gray-600"
+          <button
+            onClick={() => handleSectionClick("projects")}
+            style={{ cursor: "pointer" }}
+            className="btn-primary bg-gray-700 hover:bg-gray-600 hover:cursor-pointer z-50"
           >
             View Projects
-          </a>
+          </button>
         </div>
-        <div className="mt-12 relative">
+        <div className="mt-12 relative z-50">
           <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"></div>
           <div className="relative">
-            <div className="animate-bounce">
-              <a
-                href="#about"
-                className="text-gray-400 hover:text-white transition-colors"
+            <div className="animate-bounce z-50">
+              <button
+                onClick={() => handleSectionClick("about")}
+                style={{ cursor: "pointer" }}
+                className="text-gray-400 hover:text-white transition-colors hover:cursor-pointer z-50"
               >
                 <span className="block text-sm mb-2">Scroll Down</span>
                 <svg
@@ -51,7 +74,7 @@ const Hero = () => {
                     d="M19 14l-7 7m0 0l-7-7m7 7V3"
                   />
                 </svg>
-              </a>
+              </button>
             </div>
           </div>
         </div>

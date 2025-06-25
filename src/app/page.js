@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -18,12 +19,43 @@ const Games = dynamic(() => import("@/components/Games"), {
 });
 
 export default function Home() {
+  useEffect(() => {
+    // Handle hash navigation after page load
+    const handleScroll = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          const headerHeight = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - headerHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }
+    };
+
+    // Try scrolling multiple times to handle dynamic content
+    setTimeout(handleScroll, 100);
+    setTimeout(handleScroll, 500);
+    setTimeout(handleScroll, 1000);
+
+    // Also handle browser back/forward navigation
+    window.addEventListener("hashchange", handleScroll);
+    return () => window.removeEventListener("hashchange", handleScroll);
+  }, []);
+
   return (
     <>
       <UnderDevelopment />
       <Navbar />
 
-      <main>
+      <main className="scroll-smooth">
         <Hero />
         <About />
         <Skills />
@@ -31,8 +63,6 @@ export default function Home() {
         <Projects />
         <ViewCounter />
       </main>
-
-      
     </>
   );
 }

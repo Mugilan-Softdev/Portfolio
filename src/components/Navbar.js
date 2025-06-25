@@ -5,11 +5,13 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+const [activeSection, setActiveSection] = ("home"); // default to home
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -23,27 +25,24 @@ const Navbar = () => {
   };
 
   const handleSectionClick = (sectionId) => {
-    if (pathname !== "/") {
-      router.push("/");
-      // Add a small delay to ensure the navigation completes before scrolling
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
-    } else {
+  setActiveSection(sectionId);
+  if (pathname !== "/") {
+    router.push("/");
+    setTimeout(() => {
       const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
+    }, 100);
+  } else {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
     }
-    setIsMenuOpen(false);
-  };
+  }
+  setIsMenuOpen(false);
+};
 
-  const isActive = (path) => {
-    return pathname === path;
-  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-800">
@@ -53,37 +52,57 @@ const Navbar = () => {
             MR
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
+            <button
+              onClick={() => handleSectionClick("home")}
               className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                isActive("/")
+                activeSection === "home"
                   ? "border-blue-500 text-white"
                   : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
               }`}
             >
               Home
-            </Link>
+            </button>
+
             <button
               onClick={() => handleSectionClick("projects")}
-              className="text-gray-300 hover:text-white transition-colors"
+              className={`transition-colors ${
+                activeSection === "projects"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               Projects
             </button>
+
             <button
               onClick={() => handleSectionClick("about")}
-              className="text-gray-300 hover:text-white transition-colors"
+              className={`transition-colors ${
+                activeSection === "about"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               About
             </button>
+
             <button
               onClick={() => handleSectionClick("skills")}
-              className="text-gray-300 hover:text-white transition-colors"
+              className={`transition-colors ${
+                activeSection === "skills"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               Skills
             </button>
+
             <button
               onClick={() => handleSectionClick("contact")}
-              className="text-gray-300 hover:text-white transition-colors"
+              className={`transition-colors ${
+                activeSection === "contact"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               Contact
             </button>
