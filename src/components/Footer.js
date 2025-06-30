@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 import { MdEmail, MdLocationOn } from "react-icons/md";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -56,7 +56,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative bg-[#0B1120] pt-20 pb-6 overflow-hidden">
+    <footer
+      id="contact"
+      className="relative bg-[#0e162a] pt-20 pb-6 overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
 
@@ -116,6 +119,14 @@ const Footer = () => {
                   className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600/20 hover:text-white transition-all"
                 >
                   <FaLinkedin className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://wa.me/917397015400"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600/20 hover:text-white transition-all"
+                >
+                  <FaWhatsapp className="w-5 h-5" />
                 </a>
               </div>
             </motion.div>

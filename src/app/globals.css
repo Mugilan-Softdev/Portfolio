@@ -6,10 +6,48 @@
   :root {
     --primary: #2563eb;
     --secondary: #3b82f6;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  html {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Add cursor styles for interactive elements */
+  button,
+  a,
+  [role="button"],
+  .btn-primary {
+    cursor: pointer !important;
   }
 
   body {
     @apply bg-gray-900 text-gray-100;
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgb(var(--background-end-rgb))
+      )
+      rgb(var(--background-start-rgb));
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
   }
 }
 
@@ -31,7 +69,7 @@
   }
 
   .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-300;
+    @apply bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-300 cursor-pointer;
   }
 
   .heading {
@@ -70,4 +108,124 @@
   .animate-blob {
     animation: blob 7s infinite;
   }
+}
+
+/* Loader Animation */
+.pl1 {
+  display: block;
+  width: 8em;
+  height: 8em;
+}
+
+.pl1__g,
+.pl1__rect {
+  animation: pl1-a 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.pl1__g {
+  transform-origin: 64px 64px;
+}
+
+.pl1__rect:first-child {
+  animation-name: pl1-b;
+}
+
+.pl1__rect:nth-child(2) {
+  animation-name: pl1-c;
+}
+
+@keyframes pl1-a {
+  from {
+    transform: rotate(0);
+  }
+
+  80%,
+  to {
+    animation-timing-function: steps(1, start);
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes pl1-b {
+  from {
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+    width: 40px;
+    height: 40px;
+  }
+
+  20% {
+    animation-timing-function: steps(1, start);
+    width: 40px;
+    height: 0;
+  }
+
+  60% {
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    width: 0;
+    height: 40px;
+  }
+
+  80%,
+  to {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@keyframes pl1-c {
+  from {
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+    width: 40px;
+    height: 40px;
+    transform: translate(0, 48px);
+  }
+
+  20% {
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+    width: 40px;
+    height: 88px;
+    transform: translate(0, 0);
+  }
+
+  40% {
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+    width: 40px;
+    height: 40px;
+    transform: translate(0, 0);
+  }
+
+  60% {
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+    width: 88px;
+    height: 40px;
+    transform: translate(0, 0);
+  }
+
+  80%,
+  to {
+    width: 40px;
+    height: 40px;
+    transform: translate(48px, 0);
+  }
+}
+
+/* Memory Game Card Flipping Styles */
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Add smooth transitions for all transforms */
+.transition-transform {
+  transition: transform 0.6s;
+}
+
+/* Ensure proper 3D rendering */
+[style*="transform-style: preserve-3d"] {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }

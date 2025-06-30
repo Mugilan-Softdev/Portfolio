@@ -5,11 +5,13 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+const [activeSection, setActiveSection] = ("home"); // default to home
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,9 +24,25 @@ const Navbar = () => {
     }
   };
 
-  const isActive = (path) => {
-    return pathname === path;
-  };
+  const handleSectionClick = (sectionId) => {
+  setActiveSection(sectionId);
+  if (pathname !== "/") {
+    router.push("/");
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  } else {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+  setIsMenuOpen(false);
+};
+
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-800">
@@ -34,44 +52,60 @@ const Navbar = () => {
             MR
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
+            <button
+              onClick={() => handleSectionClick("home")}
               className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                isActive("/")
+                activeSection === "home"
                   ? "border-blue-500 text-white"
                   : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
               }`}
             >
               Home
-            </Link>
-            <Link
-              href="/projects"
-              className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                isActive("/projects")
-                  ? "border-blue-500 text-white"
-                  : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
+            </button>
+
+            <button
+              onClick={() => handleSectionClick("projects")}
+              className={`transition-colors ${
+                activeSection === "projects"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
               }`}
             >
               Projects
-            </Link>
-            <Link
-              href="#about"
-              className="text-gray-300 hover:text-white transition-colors"
+            </button>
+
+            <button
+              onClick={() => handleSectionClick("about")}
+              className={`transition-colors ${
+                activeSection === "about"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               About
-            </Link>
-            <Link
-              href="#skills"
-              className="text-gray-300 hover:text-white transition-colors"
+            </button>
+
+            <button
+              onClick={() => handleSectionClick("skills")}
+              className={`transition-colors ${
+                activeSection === "skills"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               Skills
-            </Link>
-            <Link
-              href="#contact"
-              className="text-gray-300 hover:text-white transition-colors"
+            </button>
+
+            <button
+              onClick={() => handleSectionClick("contact")}
+              className={`transition-colors ${
+                activeSection === "contact"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
             >
               Contact
-            </Link>
+            </button>
 
             {/* Profile Section (only shown when logged in) */}
             {session && (
@@ -159,38 +193,30 @@ const Navbar = () => {
               >
                 Home
               </Link>
-              <Link
-                href="/projects"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive("/projects")
-                    ? "border-blue-500 text-white"
-                    : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                onClick={() => handleSectionClick("projects")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Projects
-              </Link>
-              <Link
-                href="#about"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("about")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 About
-              </Link>
-              <Link
-                href="#skills"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("skills")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Skills
-              </Link>
-              <Link
-                href="#contact"
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => handleSectionClick("contact")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Contact
-              </Link>
+              </button>
 
               {session && (
                 <div className="border-t border-gray-700 pt-4">

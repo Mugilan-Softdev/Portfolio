@@ -11,6 +11,10 @@ module.exports = {
         primary: "var(--primary)",
         secondary: "var(--secondary)",
       },
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"],
+        heading: ["var(--font-poppins)", "sans-serif"],
+      },
     },
   },
   plugins: [],

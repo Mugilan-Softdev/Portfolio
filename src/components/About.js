@@ -1,6 +1,6 @@
 const About = () => {
   return (
-    <section id="about" className="section-padding relative overflow-hidden">
+    <section id="about" className="py-20 bg-[#0B1120]">
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>

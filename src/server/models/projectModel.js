@@ -25,7 +25,6 @@ const projectSchema = new mongoose.Schema(
     },
     githubUrl: {
       type: String,
-      required: [true, "Please provide a GitHub repository URL"],
     },
     category: {
       type: String,

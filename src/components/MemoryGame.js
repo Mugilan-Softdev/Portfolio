@@ -4,60 +4,15 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const CARD_THEMES = {
-  emoji: [
-    "🎮",
-    "🎲",
-    "🎯",
-    "🎨",
-    "🎭",
-    "🎪",
-    "🎢",
-    "🎡",
-    "🎠",
-    "🎪",
-    "🎭",
-    "🎨",
-    "🎯",
-    "🎲",
-    "🎮",
-    "🎡",
-  ],
-  symbols: [
-    "♠",
-    "♣",
-    "♥",
-    "♦",
-    "★",
-    "☀",
-    "☁",
-    "☂",
-    "♠",
-    "♣",
-    "♥",
-    "♦",
-    "★",
-    "☀",
-    "☁",
-    "☂",
-  ],
-  animals: [
-    "🐶",
-    "🐱",
-    "🐭",
-    "🐹",
-    "🐰",
-    "🦊",
-    "🐻",
-    "🐼",
-    "🐶",
-    "🐱",
-    "🐭",
-    "🐹",
-    "🐰",
-    "🦊",
-    "🐻",
-    "🐼",
-  ],
+  emoji: ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼"].flatMap((e) => [
+    e,
+    e,
+  ]),
+  symbols: ["★", "♦", "♠", "♣", "♥", "⚡", "☀", "☂"].flatMap((e) => [e, e]),
+  animals: ["🦁", "🐯", "🐮", "🐷", "🐸", "🦉", "🦋", "🐙"].flatMap((e) => [
+    e,
+    e,
+  ]),
 };
 
 const MemoryGame = () => {
@@ -69,6 +24,11 @@ const MemoryGame = () => {
   const [timer, setTimer] = useState(0);
   const [theme, setTheme] = useState("emoji");
   const [bestScore, setBestScore] = useState(null);
+
+  // Initialize game on component mount
+  useEffect(() => {
+    initializeGame();
+  }, []);
 
   // Initialize or shuffle cards
   const initializeGame = () => {
@@ -88,6 +48,17 @@ const MemoryGame = () => {
     setMoves(0);
     setTimer(0);
     setGameStarted(true);
+  };
+
+  // Handle theme change
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    setCards([]);
+    setFlippedIndices([]);
+    setMatchedPairs([]);
+    setMoves(0);
+    setTimer(0);
+    setTimeout(initializeGame, 100);
   };
 
   // Handle card click
@@ -131,7 +102,7 @@ const MemoryGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, matchedPairs.length]);
 
-  // Check for game completion
+  // Check for game completion and update best score
   useEffect(() => {
     if (matchedPairs.length === 8) {
       const score = Math.round(10000 / (moves * Math.sqrt(timer)));
@@ -140,7 +111,7 @@ const MemoryGame = () => {
         localStorage.setItem("memoryGameBestScore", score.toString());
       }
     }
-  }, [matchedPairs.length, moves, timer]);
+  }, [matchedPairs.length, moves, timer, bestScore]);
 
   // Load best score from localStorage
   useEffect(() => {
@@ -165,9 +136,8 @@ const MemoryGame = () => {
       <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
         <select
           value={theme}
-          onChange={(e) => setTheme(e.target.value)}
+          onChange={(e) => handleThemeChange(e.target.value)}
           className="px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700"
-          disabled={gameStarted}
         >
           <option value="emoji">Emoji</option>
           <option value="symbols">Symbols</option>
@@ -188,69 +158,72 @@ const MemoryGame = () => {
 
       {/* Game Grid */}
       <div className="grid grid-cols-4 gap-4">
-        {cards.map((card, index) => (
-          <motion.div
-            key={card.id}
-            initial={{ rotateY: 0 }}
-            animate={{
-              rotateY:
-                flippedIndices.includes(index) ||
-                matchedPairs.includes(card.content)
-                  ? 180
-                  : 0,
-            }}
-            transition={{ duration: 0.3 }}
-            onClick={() => handleCardClick(index)}
-            className={`
-              aspect-square bg-gray-800 rounded-xl cursor-pointer
-              flex items-center justify-center text-4xl
-              transform-gpu perspective-1000
-              ${matchedPairs.includes(card.content) ? "opacity-50" : ""}
-              hover:bg-gray-700 transition-colors
-            `}
-            style={{
-              backfaceVisibility: "hidden",
-            }}
-          >
-            {flippedIndices.includes(index) ||
-            matchedPairs.includes(card.content) ? (
-              <motion.div
-                initial={{ rotateY: -180 }}
-                animate={{ rotateY: 0 }}
-                transition={{ duration: 0 }}
-                className="w-full h-full flex items-center justify-center"
+        {cards.map((card, index) => {
+          const isFlipped =
+            flippedIndices.includes(index) ||
+            matchedPairs.includes(card.content);
+
+          return (
+            <div
+              key={card.id}
+              onClick={() => handleCardClick(index)}
+              className={`
+                relative w-full aspect-square cursor-pointer
+                ${matchedPairs.includes(card.content) ? "opacity-50" : ""}
+              `}
+              style={{ perspective: "1000px" }}
+            >
+              <div
+                className={`
+                  absolute w-full h-full transition-transform duration-300
+                  transform-gpu ${isFlipped ? "rotate-y-180" : ""}
+                `}
+                style={{ transformStyle: "preserve-3d" }}
               >
-                {card.content}
-              </motion.div>
-            ) : (
-              <motion.div className="w-full h-full flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                {/* Front of card (hidden when flipped) */}
+                <div
+                  className={`
+                    absolute w-full h-full flex items-center justify-center
+                    bg-gray-800 rounded-xl text-4xl
+                    ${isFlipped ? "backface-hidden" : ""}
+                    hover:bg-gray-700 transition-colors
+                  `}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </motion.div>
-            )}
-          </motion.div>
-        ))}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+
+                {/* Back of card (shown when flipped) */}
+                <div
+                  className={`
+                    absolute w-full h-full flex items-center justify-center
+                    bg-gray-800 rounded-xl text-4xl rotate-y-180
+                    ${!isFlipped ? "backface-hidden" : ""}
+                  `}
+                >
+                  {card.content}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Game Complete Message */}
       {matchedPairs.length === 8 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8 text-center"
-        >
+        <div className="mt-8 text-center">
           <h3 className="text-2xl font-bold text-green-500 mb-2">
             Congratulations! 🎉
           </h3>
@@ -262,10 +235,22 @@ const MemoryGame = () => {
               Your score: {Math.round(10000 / (moves * Math.sqrt(timer)))}
             </p>
           )}
-        </motion.div>
+        </div>
       )}
     </div>
   );
 };
 
 export default MemoryGame;
+
+// Add these styles to your global CSS file
+const styles = `
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+`;

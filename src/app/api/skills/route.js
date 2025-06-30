@@ -5,5 +5,13 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  return createSkill(request);
+  try {
+    return await createSkill(request);
+  } catch (error) {
+    console.error("Error in POST /api/skills:", error);
+    return Response.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
