@@ -9,6 +9,7 @@ export default function UnderDevelopment() {
 
   return (
     <div className="fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-yellow-500 to-red-500 text-white py-2 px-4 shadow-md">
+      {/* hello */}
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <svg

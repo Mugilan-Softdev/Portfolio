@@ -12,7 +12,7 @@ const Hero = () => {
         </p>
         <div className="flex justify-center gap-4">
           <a
-            href="https://drive.google.com/file/d/1Ux2jKIQjL5UmlErGQgISUuVzqhL6tOpX/view?usp=sharing"
+            href="https://drive.google.com/file/d/1NFnPL5cRBGAL7gxg5A7KwwrJ5-LWXJxu/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"
