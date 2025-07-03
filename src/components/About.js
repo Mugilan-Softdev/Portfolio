@@ -42,7 +42,7 @@ const About = () => {
                   <h3 className="text-xl font-semibold text-blue-400">
                     Full Stack Development
                   </h3>
-                  <p className="text-gray-400">Ability Coding</p>
+                  <p className="text-gray-400">Udemy</p>
                   <p className="text-sm text-gray-500 mt-2">
                     Mastered MERN stack development, building real-world
                     projects and learning industry best practices.
