@@ -106,6 +106,26 @@ const Navbar = () => {
             >
               Contact
             </button>
+            <button
+              onClick={() => handleSectionClick("contact")}
+              className={`transition-colors ${
+                activeSection === "contact"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Reference
+            </button>
+            <button
+              onClick={() => handleSectionClick("contact")}
+              className={`transition-colors ${
+                activeSection === "contact"
+                  ? "text-white border-b-2 border-blue-500"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Libary
+            </button>
 
             {/* Profile Section (only shown when logged in) */}
             {session && (
@@ -216,6 +236,18 @@ const Navbar = () => {
                 className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Contact
+              </button>
+              <button
+                onClick={() => handleSectionClick("contact")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
+              >
+                Reference
+              </button>
+              <button
+                onClick={() => handleSectionClick("contact")}
+                className="text-gray-300 hover:text-white transition-colors text-left"
+              >
+                Libary
               </button>
 
               {session && (
