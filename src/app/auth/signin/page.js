@@ -44,7 +44,7 @@ export default function SignIn() {
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
           <h1 className="text-2xl font-bold text-white text-center mb-6">
-            Admin Sign In
+            Sign to view the Dashboard
           </h1>
           <button
             onClick={handleSignIn}
