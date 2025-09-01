@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import projectModel from "../models/projectModel";
 import dbConnect from "../config/dbConnect";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Get all projects
 export async function getProjects(req, res) {
@@ -30,6 +32,7 @@ export async function getProjects(req, res) {
 export async function getProject(request, { params }) {
   try {
     await dbConnect();
+
     const project = await projectModel.findById(params.id);
 
     if (!project) {
@@ -52,6 +55,11 @@ export async function getProject(request, { params }) {
 export async function createProject(request) {
   try {
     await dbConnect();
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to add project");
+    }
     const data = await request.json();
     const project = await projectModel.create(data);
     return NextResponse.json({ success: true, data: project }, { status: 201 });
@@ -67,6 +75,12 @@ export async function createProject(request) {
 export async function updateProject(request, { params }) {
   try {
     await dbConnect();
+
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to update project");
+    }
     const data = await request.json();
     const project = await projectModel.findByIdAndUpdate(params.id, data, {
       new: true,
@@ -93,6 +107,11 @@ export async function updateProject(request, { params }) {
 export async function deleteProject({ params }) {
   try {
     await dbConnect();
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to delete project");
+    }
     const project = await projectModel.findByIdAndDelete(params.id);
 
     if (!project) {
@@ -115,6 +134,11 @@ export async function deleteProject({ params }) {
 export async function seedProjects(req, res) {
   try {
     await dbConnect();
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to change the position of the project");
+    }
     const existingProjects = await projectModel.find();
 
     if (existingProjects.length > 0) {

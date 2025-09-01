@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import skillModel from "../models/skillModel";
 import dbConnect from "../config/dbConnect";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Get all skills
-export async function getSkills(req, res) {
+export async function getSkills(res) {
   try {
     await dbConnect();
     const skills = await skillModel
@@ -32,6 +34,13 @@ export async function getSkills(req, res) {
 export async function createSkill(request) {
   try {
     await dbConnect();
+
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to add skill");
+    }
+
     const data = await request.json();
     console.log("Creating skill with data:", data);
 
@@ -78,6 +87,13 @@ export async function createSkill(request) {
 export async function updateSkill(request, { params }) {
   try {
     await dbConnect();
+
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to update the skill");
+    }
+
     const data = await request.json();
     const skill = await skillModel.findByIdAndUpdate(params.id, data, {
       new: true,
@@ -104,6 +120,13 @@ export async function updateSkill(request, { params }) {
 export async function deleteSkill({ params }) {
   try {
     await dbConnect();
+
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to delete skill");
+    }
+
     const skill = await skillModel.findByIdAndDelete(params.id);
 
     if (!skill) {
@@ -113,7 +136,7 @@ export async function deleteSkill({ params }) {
       );
     }
 
-    return NextResponse.json({ success: true, data: {} });
+    return NextResponse.json({ success: true, data: {} ,validation });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },

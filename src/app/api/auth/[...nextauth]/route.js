@@ -45,32 +45,24 @@ export const authOptions = {
       }
       return true;
     },
-    async session({ session }) {
-      try {
-        await dbConnect();
 
-        // Get user from database
-        const user = await User.findOne({ email: session.user.email });
-
-        // Add role to session
-        if (user) {
-          session.user.role = user.role;
-        }
-
-        return session;
-      } catch (error) {
-        console.error("Session callback error:", error);
-        return session;
-      }
-    },
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        token.accessToken = account.access_token;
-        token.id = user.id;
+    async jwt({ token, user }) {
+      if (user) {
+        // Lookup user in DB on login
+        const dbUser = await User.findOne({ email: user.email });
+        token.role = dbUser?.role || "user";
       }
       return token;
     },
+
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.role = token.role || "user"; // ✅ ensure role always added
+      }
+      return session;
+    },
   },
+
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",

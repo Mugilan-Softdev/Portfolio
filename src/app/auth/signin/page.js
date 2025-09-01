@@ -20,7 +20,7 @@ export default function SignIn() {
       if (session.user.role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/");
+        router.push("/admin");
       }
     }
   }, [session, status, router]);

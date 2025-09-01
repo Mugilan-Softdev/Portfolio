@@ -20,11 +20,6 @@ export default function AdminLayout({ children }) {
           return;
         }
 
-        if (session?.user?.role !== "admin") {
-          router.replace("/");
-          return;
-        }
-
         setIsChecking(false);
       } catch (error) {
         console.error("Auth check error:", error);
@@ -47,16 +42,14 @@ export default function AdminLayout({ children }) {
     );
   }
 
-  // Only render admin content if user is authenticated and is admin
-  if (session?.user?.role === "admin") {
+
     return (
       <div className="min-h-screen bg-gray-900 flex">
         <AdminSidebar />
         <main className="flex-1 p-8 overflow-auto">{children}</main>
       </div>
     );
-  }
+  
 
-  // This should never show as we redirect non-admin users
-  return null;
+
 }

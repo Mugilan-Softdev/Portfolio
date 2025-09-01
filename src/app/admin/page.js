@@ -34,7 +34,7 @@ export default function AdminDashboard() {
         setStats((prev) => ({
           ...prev,
           skills: skillsData.data?.length || 0,
-          views: viewsData.data?.length || 0,
+          views: viewsData.views || 0,
         }));
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -44,9 +44,9 @@ export default function AdminDashboard() {
       }
     };
 
-    if (session?.user?.role === "admin") {
+
       fetchStats();
-    }
+
   }, [session]);
 
   const statCards = [
@@ -159,6 +159,19 @@ export default function AdminDashboard() {
               className="p-4 bg-gray-700 rounded-lg text-gray-300 hover:bg-gray-600 transition-colors text-center"
             >
               View Messages
+            </Link>
+
+             <Link
+              href="/admin/messages"
+              className="p-4 bg-gray-700 rounded-lg text-gray-300 hover:bg-gray-600 transition-colors text-center"
+            >
+              Reference
+            </Link>
+             <Link
+              href="/admin/messages"
+              className="p-4 bg-gray-700 rounded-lg text-gray-300 hover:bg-gray-600 transition-colors text-center"
+            >
+              Libary
             </Link>
             <button className="p-4 bg-gray-700 rounded-lg text-gray-300 hover:bg-gray-600 transition-colors">
               Update Profile

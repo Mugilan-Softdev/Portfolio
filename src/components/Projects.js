@@ -8,7 +8,6 @@ import { toast } from "react-hot-toast";
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const fetchProjects = async () => {
     try {
@@ -41,28 +40,8 @@ export default function Projects() {
       setProjects(projectsToShow);
     } catch (err) {
       console.error("Error fetching projects:", err);
-      setError(err.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSeedProjects = async () => {
-    try {
-      const response = await fetch("/api/projects/seed", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to seed projects");
-      }
-
-      toast.success("Projects seeded successfully!");
-      fetchProjects(); // Refresh the projects list
-    } catch (err) {
-      console.error("Error seeding projects:", err);
-      toast.error(err.message);
     }
   };
 
@@ -76,25 +55,6 @@ export default function Projects() {
         <div className="max-w-7xl mx-auto relative">
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section id="projects" className="py-20 bg-[#0B1120]">
-        <div className="max-w-7xl mx-auto relative">
-          <div className="text-center">
-            <h2 className="heading">Featured Projects</h2>
-            <p className="text-red-500 mb-8">{error}</p>
-            <button
-              onClick={handleSeedProjects}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Add Sample Projects
-            </button>
           </div>
         </div>
       </section>

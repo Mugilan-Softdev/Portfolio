@@ -15,7 +15,7 @@ const ViewCounter = () => {
         // Get total views
         const response = await fetch("/api/viewers");
         const data = await response.json();
-        setViewCount(data.data.length);
+        setViewCount(data.views);
       } catch (error) {
         console.error("Error recording view:", error);
       } finally {

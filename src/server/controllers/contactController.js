@@ -3,7 +3,7 @@ import Contact from "../models/contactModel";
 import dbConnect from "../config/dbConnect";
 
 // Get all messages (admin only)
-export async function getMessages(req, res) {
+export async function getMessages(res) {
   try {
     await dbConnect();
     const messages = await Contact.find().sort({ createdAt: -1 });
@@ -62,6 +62,12 @@ export async function createMessage(request) {
 export async function deleteMessage(request, { params }) {
   try {
     await dbConnect();
+
+    const validation = await getServerSession(authOptions);
+
+    if (validation?.user?.role !== "admin") {
+      return NextResponse.json("sorry your not allowed to delete the contact details");
+    }
     const message = await Contact.findByIdAndDelete(params.id);
 
     if (!message) {

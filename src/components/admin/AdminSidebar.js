@@ -30,6 +30,16 @@ const AdminSidebar = () => {
       href: "/admin/messages",
       icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
     },
+    {
+      name: "Reference",
+      href: "/admin/reference",
+      icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    },
+    {
+      name: "Libary",
+      href: "/admin/libary",
+      icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    },
   ];
 
   const isActive = (path) => {
@@ -40,13 +50,15 @@ const AdminSidebar = () => {
     <div className="w-64 bg-gray-800 text-white p-6">
       <div className="flex items-center gap-4 mb-8">
         {session?.user?.image && (
-          <Image
-            src={session.user.image}
-            alt={session.user.name}
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <Link href="/">
+            <Image
+              src={session.user.image}
+              alt={session.user.name}
+              width={40}
+              height={40}
+              className="rounded-full cursor-pointer"
+            />
+          </Link>
         )}
         <div>
           <h3 className="font-medium">{session?.user?.name}</h3>

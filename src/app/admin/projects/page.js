@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: session } = useSession();
-  const router = useRouter();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -25,14 +21,6 @@ export default function AdminProjectsPage() {
   });
 
   const [editingProject, setEditingProject] = useState(null);
-
-  useEffect(() => {
-    if (!session || session.user.role !== "admin") {
-      router.push("/auth/signin");
-      return;
-    }
-    fetchProjects();
-  }, [session, router]);
 
   async function fetchProjects() {
     try {
@@ -158,6 +146,10 @@ export default function AdminProjectsPage() {
       toast.error(error.message);
     }
   }
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   if (isLoading) {
     return (

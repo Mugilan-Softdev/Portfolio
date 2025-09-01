@@ -14,7 +14,7 @@ const About = () => {
         {/* Main content grid */}
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left column - Personal description */}
-          <div className="space-y-6">
+          <div className="space-y-6 p-5">
             <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-6 backdrop-blur-sm border border-gray-700">
               <p className="text-lg text-gray-300 leading-relaxed">
                 I am a passionate Full Stack Developer with a deep love for
@@ -83,7 +83,7 @@ const About = () => {
           </div>
 
           {/* Right column - Stats and interests */}
-          <div className="space-y-6">
+          <div className="space-y-6 p-5">
             <div className="card backdrop-blur-sm border border-gray-700">
               <h3 className="text-xl font-semibold mb-4 gradient-text">
                 What I Do

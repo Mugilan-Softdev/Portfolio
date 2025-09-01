@@ -5,13 +5,13 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-const [activeSection, setActiveSection] = ("home"); // default to home
+import { User } from "lucide-react";
 
 const Navbar = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeSection, setActiveSection] = useState("home");
   const router = useRouter();
   const pathname = usePathname();
 
@@ -25,101 +25,71 @@ const Navbar = () => {
   };
 
   const handleSectionClick = (sectionId) => {
-  setActiveSection(sectionId);
-  if (pathname !== "/") {
-    router.push("/");
-    setTimeout(() => {
+    setActiveSection(sectionId);
+    if (pathname !== "/") {
+      router.push("/");
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
       const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
-    }, 100);
-  } else {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
     }
-  }
-  setIsMenuOpen(false);
-};
-
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <Link href="/" className="text-xl font-bold gradient-text">
             MR
           </Link>
+
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => handleSectionClick("home")}
-              className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                activeSection === "home"
-                  ? "border-blue-500 text-white"
-                  : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
-              }`}
-            >
-              Home
-            </button>
+            {/* Navigation buttons */}
+            {["home", "projects", "about", "skills", "contact"].map((section) => (
+              <button
+                key={section}
+                onClick={() => handleSectionClick(section)}
+                className={`transition-colors ${
+                  activeSection === section
+                    ? "text-white border-b-2 border-blue-500"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </button>
+            ))}
 
             <button
-              onClick={() => handleSectionClick("projects")}
+              onClick={() => {
+                setActiveSection("reference");
+                router.push("/reference");
+              }}
               className={`transition-colors ${
-                activeSection === "projects"
-                  ? "text-white border-b-2 border-blue-500"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              Projects
-            </button>
-
-            <button
-              onClick={() => handleSectionClick("about")}
-              className={`transition-colors ${
-                activeSection === "about"
-                  ? "text-white border-b-2 border-blue-500"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              About
-            </button>
-
-            <button
-              onClick={() => handleSectionClick("skills")}
-              className={`transition-colors ${
-                activeSection === "skills"
-                  ? "text-white border-b-2 border-blue-500"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              Skills
-            </button>
-
-            <button
-              onClick={() => handleSectionClick("contact")}
-              className={`transition-colors ${
-                activeSection === "contact"
-                  ? "text-white border-b-2 border-blue-500"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              Contact
-            </button>
-            <button
-              onClick={() => handleSectionClick("contact")}
-              className={`transition-colors ${
-                activeSection === "contact"
+                activeSection === "reference"
                   ? "text-white border-b-2 border-blue-500"
                   : "text-gray-300 hover:text-white"
               }`}
             >
               Reference
             </button>
+
             <button
-              onClick={() => handleSectionClick("contact")}
+              onClick={() => {
+                setActiveSection("libary");
+                router.push("/libary");
+              }}
               className={`transition-colors ${
-                activeSection === "contact"
+                activeSection === "libary"
                   ? "text-white border-b-2 border-blue-500"
                   : "text-gray-300 hover:text-white"
               }`}
@@ -127,50 +97,60 @@ const Navbar = () => {
               Libary
             </button>
 
-            {/* Profile Section (only shown when logged in) */}
-            {session && (
-              <div className="relative">
+            {/* Profile / Login */}
+            <div className="relative">
+              {!session ? (
                 <button
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors focus:outline-none"
+                  onClick={() => signIn()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  {session.user.image && (
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  )}
-                  <span>{session.user.name}</span>
+                  Login
                 </button>
-
-                {/* Profile Dropdown */}
-                {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 py-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
-                    {session.user.role === "admin" && (
-                      <Link
-                        href="/admin"
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                        onClick={() => setIsProfileOpen(false)}
-                      >
-                        Admin Dashboard
-                      </Link>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors focus:outline-none"
+                  >
+                    {session.user?.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt={session.user.name || "User"}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <User className="w-8 h-8 text-gray-400" />
                     )}
-                    <button
-                      onClick={() => {
-                        handleSignOut();
-                        setIsProfileOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+                    <span>{session.user?.name}</span>
+                  </button>
+
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 py-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700">
+
+                        <Link
+                          href="/admin"
+                          className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      
+                      <button
+                        onClick={() => {
+                          handleSignOut();
+                          setIsProfileOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -202,69 +182,65 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4">
             <div className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive("/")
-                    ? "border-blue-500 text-white"
-                    : "border-transparent text-gray-300 hover:border-gray-300 hover:text-white"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
+              {["home", "projects", "about", "skills", "contact"].map(
+                (section) => (
+                  <button
+                    key={section}
+                    onClick={() => handleSectionClick(section)}
+                    className="text-gray-300 hover:text-white transition-colors text-left"
+                  >
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </button>
+                )
+              )}
+
               <button
-                onClick={() => handleSectionClick("projects")}
-                className="text-gray-300 hover:text-white transition-colors text-left"
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => handleSectionClick("about")}
-                className="text-gray-300 hover:text-white transition-colors text-left"
-              >
-                About
-              </button>
-              <button
-                onClick={() => handleSectionClick("skills")}
-                className="text-gray-300 hover:text-white transition-colors text-left"
-              >
-                Skills
-              </button>
-              <button
-                onClick={() => handleSectionClick("contact")}
-                className="text-gray-300 hover:text-white transition-colors text-left"
-              >
-                Contact
-              </button>
-              <button
-                onClick={() => handleSectionClick("contact")}
+                onClick={() => {
+                  setActiveSection("reference");
+                  router.push("/reference");
+                  setIsMenuOpen(false);
+                }}
                 className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Reference
               </button>
               <button
-                onClick={() => handleSectionClick("contact")}
+                onClick={() => {
+                  setActiveSection("libary");
+                  router.push("/libary");
+                  setIsMenuOpen(false);
+                }}
                 className="text-gray-300 hover:text-white transition-colors text-left"
               >
                 Libary
               </button>
 
-              {session && (
+              {/* Profile / Login for mobile */}
+              {!session ? (
+                <button
+                  onClick={() => signIn()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Login
+                </button>
+              ) : (
                 <div className="border-t border-gray-700 pt-4">
                   <div className="flex items-center space-x-2 mb-4">
-                    {session.user.image && (
+                    {session.user?.image ? (
                       <Image
                         src={session.user.image}
-                        alt={session.user.name}
+                        alt={session.user.name || "User"}
                         width={32}
                         height={32}
                         className="rounded-full"
                       />
+                    ) : (
+                      <User className="w-8 h-8 text-gray-400" />
                     )}
-                    <span className="text-gray-300">{session.user.name}</span>
+                    <span className="text-gray-300">
+                      {session.user?.name}
+                    </span>
                   </div>
-                  {session.user.role === "admin" && (
                     <Link
                       href="/admin"
                       className="block text-gray-300 hover:text-white transition-colors mb-2"
@@ -272,7 +248,6 @@ const Navbar = () => {
                     >
                       Admin Dashboard
                     </Link>
-                  )}
                   <button
                     onClick={() => {
                       handleSignOut();
