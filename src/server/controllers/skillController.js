@@ -4,25 +4,16 @@ import dbConnect from "../config/dbConnect";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-// Get all skills
-export async function getSkills(res) {
+export async function getSkills() {
   try {
     await dbConnect();
     const skills = await skillModel
       .find()
       .sort({ category: 1, proficiency: -1 });
 
-    // If it's an API route request
-    if (res) {
-      return res.status(200).json({ success: true, data: skills });
-    }
-    // If it's a Route Handler request
     return NextResponse.json({ success: true, data: skills });
   } catch (error) {
     console.error("Error in getSkills:", error);
-    if (res) {
-      return res.status(500).json({ success: false, error: error.message });
-    }
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

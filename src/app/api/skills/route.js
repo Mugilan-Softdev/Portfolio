@@ -1,17 +1,22 @@
-import { getSkills, createSkill } from "@/server/controllers/skillController";
+import {
+  getSkills,
+  createSkill,
+  updateSkill,
+  deleteSkill,
+} from "@/server/controllers/skillController";
 
-export async function GET() {
-  return getSkills();
+export async function GET(request) {
+  return getSkills(request);
 }
 
 export async function POST(request) {
-  try {
-    return await createSkill(request);
-  } catch (error) {
-    console.error("Error in POST /api/skills:", error);
-    return Response.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+  return createSkill(request);
+}
+
+export async function PUT(request) {
+  return updateSkill(request);
+}
+
+export async function DELETE(request) {
+  return deleteSkill(request);
 }
